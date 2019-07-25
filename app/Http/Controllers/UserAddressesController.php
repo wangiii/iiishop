@@ -15,11 +15,9 @@ class UserAddressesController extends Controller
         ]);
     }
 
-    public function create()
+    public function create(UserAddress $user_address)
     {
-        return view('user_addresses.create_and_edit', [
-            'address' => new UserAddress()
-        ]);
+        return view('user_addresses.create_and_edit', ['address' => $user_address]);
     }
 
     public function store(UserAddressRequest $request)
@@ -64,7 +62,7 @@ class UserAddressesController extends Controller
     public function destroy(UserAddress $user_address)
     {
         $this->authorize('own', $user_address);
-        
+
         $user_address->delete();
 
         return [];
