@@ -55,4 +55,20 @@ class ProductsController extends Controller
             ],
         ]);
     }
+
+    /**
+     * @param Product $product
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Exception
+     * @author: JasonVV
+     * @Time: 2019-08-03 22:04
+     */
+    public function show(Product $product, Request $request)
+    {
+        if (!$product->on_sale) {
+            throw new \Exception('商品未上架');
+        }
+        return view('products.show', ['product' => $product]);
+    }
 }
