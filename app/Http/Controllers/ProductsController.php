@@ -2,17 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\InvalidRequestException;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ProductsController extends Controller
 {
-    /**
-     * @param Request $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     * @author: JasonVV
-     * @Time: 2019-08-03 21:34
-     */
     public function index(Request $request)
     {
         // 创建一个查询构造器
@@ -56,18 +51,10 @@ class ProductsController extends Controller
         ]);
     }
 
-    /**
-     * @param Product $product
-     * @param Request $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     * @throws \Exception
-     * @author: JasonVV
-     * @Time: 2019-08-03 22:04
-     */
     public function show(Product $product, Request $request)
     {
         if (!$product->on_sale) {
-            throw new \Exception('商品未上架');
+            throw new InvalidRequestException('商品未上架');
         }
         return view('products.show', ['product' => $product]);
     }
