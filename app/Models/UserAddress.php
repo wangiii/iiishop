@@ -24,7 +24,7 @@ class UserAddress extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function getFullAddress()
+    public function getFullAddressAttribute()
     {
         return "{$this->province}{$this->city}{$this->district}{$this->address}";
     }
