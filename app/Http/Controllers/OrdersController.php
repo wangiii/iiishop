@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\InvalidRequestException;
 use App\Http\Requests\OrderRequest;
-use App\Http\Requests\Request;
+use Illuminate\Http\Request;
 use App\Jobs\CloseOrder;
 use App\Models\ProductSku;
 use App\Models\UserAddress;
@@ -80,5 +80,11 @@ class OrdersController extends Controller
             ->paginate();
 
         return view('orders.index', ['orders' => $order]);
+    }
+
+    public function show(Order $order,Request $request)
+    {
+        $this->authorize('own', $order);
+        return view('orders.show', ['order' => $order->load(['items.productSku', 'items.product'])]);
     }
 }
