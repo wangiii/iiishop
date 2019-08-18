@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\InvalidRequestException;
 use App\Http\Requests\OrderRequest;
+use App\Http\Requests\Request;
 use App\Jobs\CloseOrder;
 use App\Models\ProductSku;
 use App\Models\UserAddress;
@@ -68,5 +69,16 @@ class OrdersController extends Controller
         });
 
         return $order;
+    }
+
+    public function index(Request $request)
+    {
+        $order = Order::query()
+            ->with(['items.product', 'items.productSku'])
+            ->where('user_id', $request->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate();
+
+        return view('orders.index', ['orders' => $order]);
     }
 }
