@@ -14,3 +14,4 @@ composer.lock
 /public/css
 /public/mix-manifest.json
 /public/fonts
+/.idea

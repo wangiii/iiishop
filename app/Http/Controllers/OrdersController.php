@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\OrderReviewed;
 use App\Exceptions\InvalidRequestException;
 use App\Http\Requests\OrderRequest;
+use App\Http\Requests\SendReviewRequest;
 use App\Services\OrderService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\UserAddress;
 use App\Models\Order;
@@ -49,5 +52,62 @@ class OrdersController extends Controller
         $order->update(['ship_status' => Order::SHIP_STATUS_RECEIVED]);
 
         return $order;
+    }
+
+    public function review(Order $order)
+    {
+        $this->authorize('own', $order);
+        // 判断是否已经支付
+        $this->isPaid($order);
+        // 使用 load 方法加载关联数据，避免 N+1 问题
+        return view('orders.review', ['order' => $order->load(['items.productSku', 'items.product'])]);
+    }
+
+    public function sendReview(Order $order, SendReviewRequest $request)
+    {
+        $this->authorize('own', $order);
+        $this->isPaid($order);
+        $this->isReviewed($order);
+
+        $reviews = $request->input('reviews');
+
+        // 开启事务
+        \DB::transaction(function () use ($reviews, $order) {
+           // 遍历用户提交的数据
+            foreach ($reviews as $review) {
+                $orderItem = $order->items()->find($review['id']);
+                // 保存评分和评价
+                $orderItem->update([
+                    'rating' => $review['rating'],
+                    'review' => $review['review'],
+                    'reviewed_at' => Carbon::now(),
+                ]);
+            }
+            // 将订单标记为已评价
+            $order->update(['reviewed' => true]);
+            event(new OrderReviewed($order));
+        });
+
+        return redirect()->back();
+    }
+
+    /*
+     * 判断是否已经支付
+     */
+    public function isPaid(Order $order)
+    {
+        if (!$order->paid_at) {
+            throw new InvalidRequestException('该订单未支付，不能评价');
+        }
+    }
+
+    /*
+     * 判断是否已经评价
+     */
+    public function isReviewed(Order $order)
+    {
+        if ($order->reviewed) {
+            throw new InvalidRequestException('该订单已评价，不可重复提交');
+        }
     }
 }
