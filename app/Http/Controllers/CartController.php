@@ -15,6 +15,7 @@ class CartController extends Controller
     {
         $this->cartService = $cartService;
     }
+
     public function add(AddCartRequest $request)
     {
         $this->cartService->add($request->input('sku_id'), $request->input('amount'));
