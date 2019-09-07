@@ -1,4 +1,5 @@
 <?php
+
 use App\Models\CouponCode;
 use App\Models\Order;
 use App\Models\User;
@@ -33,7 +34,7 @@ $factory->define(Order::class, function (Faker $faker) {
         'total_amount'   => 0,
         'remark'         => $faker->sentence,
         'paid_at'        => $faker->dateTimeBetween('-30 days'), // 30天前到现在任意时间点
-        'payment_method' => $faker->randomElement(['alipay']),
+        'payment_method' => 'alipay',
         'payment_no'     => $faker->uuid,
         'refund_status'  => $refund ? Order::REFUND_STATUS_SUCCESS : Order::REFUND_STATUS_PENDING,
         'refund_no'      => $refund ? Order::getAvailableRefundNo() : null,
