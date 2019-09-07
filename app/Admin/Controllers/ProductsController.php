@@ -65,6 +65,12 @@ class ProductsController extends Controller
     protected function form()
     {
         $form = new Form(new Product);
+
+        $form->tools(function (Form\Tools $tools) {
+            $tools->disableView();
+            $tools->disableDelete();
+        });
+
         $form->text('title', '商品名称')->rules('required');
         $form->image('image', '封面图片')->rules('required|image');
         $form->editor('description', '商品描述')->rules('required');

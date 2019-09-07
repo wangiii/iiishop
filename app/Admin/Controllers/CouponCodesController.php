@@ -96,9 +96,6 @@ class CouponCodesController extends Controller
 
         $form->footer(function ($footer) {
             $footer->disableViewCheck();
-            $footer->disableEditingCheck();
-            $footer->disableCreatingCheck();
-
         });
 
         $form->display('id', 'ID');
